@@ -1,21 +1,40 @@
 package com.example.springBoot2.controllers;
 
+import com.example.springBoot2.repositories.MovieRepository;
 import com.example.springBoot2.models.Movie;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/movies")
 public class MovieController {
-    private final List<Movie> movies = List.of(
-        new Movie("The Shawshank Redemption", "Frank Darabont", 1994, 142),
-        new Movie("The Godfather", "Francis Ford Coppola", 1972, 175),
-        new Movie("The Dark Knight", "Christopher Nolan", 2008, 152)
-    );
+    @Autowired
+    private com.example.springBoot2.repositories.MovieRepository movieRepository;
 
-    @GetMapping
+    @GetMapping("/movies")
     public List<Movie> getMovies() {
-        return movies;
+        return movieRepository.findAll();
+    }
+
+    @GetMapping("/movies/{id}")
+    public Movie getMovie(@PathVariable int id) {
+        return movieRepository.findById(id).orElse(null);
+    }
+
+    @PostMapping("/movies")
+    public Movie createMovie(@RequestBody Movie movie) {
+        return movieRepository.save(movie);
+    }
+
+    @PutMapping("/movies/{id}")
+    public Movie updateMovie(@PathVariable int id, @RequestBody Movie movie) {
+        movie.setId(id);
+        return movieRepository.save(movie);
+    }
+
+    @DeleteMapping("/movies/{id}")
+    public void deleteMovie(@PathVariable int id) {
+        movieRepository.deleteById(id);
     }
 }
